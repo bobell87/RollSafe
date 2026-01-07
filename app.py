@@ -34,90 +34,57 @@ st.set_page_config(
 
 CSS = """
 <style>
-:root {
-  --bg: #0b1220;
-  --panel: rgba(255,255,255,0.06);
-  --panel2: rgba(255,255,255,0.08);
-  --stroke: rgba(255,255,255,0.10);
-  --text: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.70);
-  --good: #42f58d;
-  --warn: #ffd166;
-  --bad: #ff5c7a;
-  --brand: #7aa2ff;
-  --brand2: #9bf6ff;
-  --chip: rgba(122,162,255,0.15);
-  --shadow: 0 10px 30px rgba(0,0,0,0.35);
-  --radius: 18px;
-}
-html, body, [class*="css"]  { color: var(--text); }
-.stApp {
-  background:
-    radial-gradient(1200px 700px at 10% 10%, rgba(122,162,255,0.23), transparent 55%),
-    radial-gradient(900px 600px at 85% 30%, rgba(155,246,255,0.18), transparent 50%),
-    radial-gradient(900px 700px at 40% 95%, rgba(255,92,122,0.14), transparent 55%),
-    linear-gradient(180deg, #060a14 0%, #080d1a 30%, #070b16 100%);
-}
-.block-container { padding-top: 1.2rem; padding-bottom: 2.0rem; }
-.small-muted { color: var(--muted); font-size: 0.92rem; }
-.hr { height: 1px; background: var(--stroke); margin: 0.75rem 0 1.0rem; border-radius: 12px; }
+    /* Force Dark Mode & High-End Background */
+    .stApp {
+        background: #0E1117;
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
+    
+    /* Turn Sidebar into a sleek floating menu */
+    section[data-testid="stSidebar"] {
+        background-color: #161B22 !important;
+        border-right: 1px solid #30363D;
+    }
 
-.card {
-  background: var(--panel);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 1.0rem 1.0rem;
-  box-shadow: var(--shadow);
-}
-.card2 {
-  background: var(--panel2);
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  padding: 1.0rem 1.0rem;
-  box-shadow: var(--shadow);
-}
-.h1 {
-  font-size: 1.55rem; font-weight: 800; letter-spacing: -0.02em;
-}
-.h2 {
-  font-size: 1.20rem; font-weight: 750; letter-spacing: -0.01em;
-}
-.badge {
-  display: inline-block; padding: 0.22rem 0.55rem; margin-right: 0.35rem;
-  border-radius: 999px; border: 1px solid var(--stroke); background: var(--chip);
-  font-size: 0.85rem; color: var(--text);
-}
-.kpi {
-  display:flex; gap:0.8rem; align-items:center; justify-content:space-between;
-}
-.kpi .val { font-size: 1.35rem; font-weight: 800; }
-.kpi .lab { color: var(--muted); font-size: 0.92rem; }
-.good { color: var(--good); }
-.warn { color: var(--warn); }
-.bad { color: var(--bad); }
-a { color: var(--brand2) !important; }
-.stTextInput > div > div > input,
-.stNumberInput > div > div > input,
-.stDateInput > div > div > input,
-.stSelectbox > div > div > div,
-.stTextArea textarea {
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.10) !important;
-  border-radius: 12px !important;
-}
-.stButton > button {
-  border-radius: 12px !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  background: rgba(122,162,255,0.18) !important;
-  color: var(--text) !important;
-  font-weight: 700 !important;
-}
-.stButton > button:hover { background: rgba(122,162,255,0.28) !important; }
-div[data-testid="stSidebar"] {
-  background: rgba(255,255,255,0.03);
-  border-right: 1px solid rgba(255,255,255,0.08);
-}
+    /* Professional Card Styling */
+    div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown) {
+        background: #1C2128;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #30363D;
+        margin-bottom: 10px;
+    }
+
+    /* Style the Buttons to look like iOS buttons */
+    .stButton>button {
+        width: 100%;
+        border-radius: 12px;
+        height: 50px;
+        background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Fix the Map Border */
+    iframe {
+        border-radius: 15px;
+        border: 2px solid #30363D;
+    }
+
+    /* KPI Numbers: Make them POP */
+    .val {
+        color: #FFFFFF;
+        font-size: 2rem !important;
+        font-weight: 800;
+        text-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    }
 </style>
+"""
+
+
 """
 st.markdown(CSS, unsafe_allow_html=True)
 
