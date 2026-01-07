@@ -30,55 +30,53 @@ st.markdown("""
         background: #0A84FF !important; color: white !important;
         font-weight: 700; border: none;
     }
-    /* GPS Button Style */
-    .gps-btn>button { background: #32D74B !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div style="text-align:center; color:white; font-weight:800; font-size:28px; padding:15px;">RollSafe</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align:center; color:white; font-weight:800; font-size:28px; padding:15px; letter-spacing:-1px;">RollSafe</div>', unsafe_allow_html=True)
 
 # --- GPS LOGIC ---
-# This pulls the actual phone location
+# Triggers browser's native Geolocation
 location = streamlit_js_eval(js_expressions="navigator.geolocation.getCurrentPosition(pos => { window.parent.postMessage({type: 'streamlit:setComponentValue', value: [pos.coords.latitude, pos.coords.longitude]}, '*') });", key="gps")
 
 # 1. LIVE GUARDRAIL
 st.markdown("""
 <div class="safety-banner">
-    <div style="color: #FF453A; font-weight: 800; font-size: 11px;">🛡️ LIVE GPS GUARDRAIL</div>
+    <div style="color: #FF453A; font-weight: 800; font-size: 11px; letter-spacing:0.5px;">🛡️ LIVE GPS GUARDRAIL</div>
     <div style="color: white; font-size: 15px; font-weight: 600; margin-top: 4px;">Monitoring Route for Low Bridges & Hazmat Restrictions.</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 2. METRICS
+# 2. PERFORMANCE TILES
 c1, c2 = st.columns(2)
 with c1:
     st.markdown('<div class="tile"><div class="label">Trip Profit</div><div class="value">$1,240</div></div>', unsafe_allow_html=True)
 with c2:
     st.markdown('<div class="tile"><div class="label">Compliance</div><div class="value" style="color:#32D74B">ELITE</div></div>', unsafe_allow_html=True)
 
-# 3. DISPATCH MAP
+# 3. NATIVE NAVIGATION
 tab1, tab2 = st.tabs(["🗺️ NAVIGATION", "📂 VAULT"])
 
 with tab1:
-    st.markdown('<div style="background:#1C1C1E; padding:15px; border-radius:20px;">', unsafe_allow_html=True)
+    st.markdown('<div style="background:#1C1C1E; padding:15px; border-radius:20px; border:1px solid #2C2C2E;">', unsafe_allow_html=True)
     
-    # If GPS is found, center there; otherwise center on USA
+    # Centers on USA if GPS isn't shared yet
     view_lat, view_lon = location if location else [39.8, -98.5]
     zoom = 14 if location else 4
     
     m = folium.Map(location=[view_lat, view_lon], zoom_start=zoom, tiles="CartoDB dark_matter")
     if location:
-        folium.Marker([view_lat, view_lon], popup="Truck Location", icon=folium.Icon(color='blue', icon='truck', prefix='fa')).add_to(m)
+        folium.Marker([view_lat, view_lon], popup="Live Truck Position", icon=folium.Icon(color='blue', icon='truck', prefix='fa')).add_to(m)
     
     st_folium(m, height=350, use_container_width=True)
     
-    if st.button("🔄 RE-CENTER GPS", key="gps_trigger"):
+    if st.button("🔄 RE-CENTER TRUCK", key="gps_trigger"):
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
-    st.markdown('<div class="tile"><div class="label">Smart OCR</div>', unsafe_allow_html=True)
+    st.markdown('<div class="tile"><div class="label">Smart OCR Sync</div>', unsafe_allow_html=True)
     st.file_uploader("Upload BOL/RateCon", type=['png','pdf','jpg'])
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.caption("RollSafe Terminal • v3.5 GPS-Active")
+st.caption("RollSafe Terminal • v3.5 GPS-Active • rollsafe.app")
