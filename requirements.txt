@@ -1,3 +1,7 @@
 streamlit
 pandas
-pydeck
+numpy
+altair
+folium
+streamlit-folium
+
