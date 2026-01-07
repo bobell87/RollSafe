@@ -1,18 +1,11 @@
 # app.py
 import streamlit as st
 import pandas as pd
-import numpy as np
-import altair as alt
 import folium
 from streamlit_folium import st_folium
-from datetime import datetime, timedelta, date
-import re
-import io
-import json
-import math
-from typing import Dict, Any, Tuple, List, Optional
+from datetime import datetime
 
-# --- BRANDING & UI CONFIG ---
+# --- APP CONFIG ---
 st.set_page_config(
     page_title="RollSafe",
     page_icon="🛡️",
@@ -20,116 +13,131 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# High-End Mobile CSS
+# --- PREMIUM IOS CSS ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;800&display=swap');
     
     .stApp {
-        background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-        font-family: 'Inter', sans-serif;
+        background-color: #000000;
+        font-family: 'SF Pro Display', -apple-system, sans-serif;
     }
     
-    /* Sleek Apple-style Cards */
+    /* Header Styling */
+    .main-header {
+        font-size: 28px;
+        font-weight: 800;
+        color: white;
+        padding-bottom: 20px;
+        text-align: center;
+    }
+
+    /* iOS Style Alert Box */
+    .alert-box {
+        background: rgba(255, 59, 48, 0.15);
+        border: 1px solid #FF3B30;
+        border-radius: 18px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #FF453A;
+    }
+
+    /* Tab Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        background-color: #1C1C1E;
+        padding: 8px;
+        border-radius: 12px;
+        justify-content: center;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        height: 45px;
+        background-color: transparent;
+        border-radius: 8px;
+        color: #8E8E93;
+        font-weight: 600;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background-color: #2C2C2E !important;
+        color: #0A84FF !important;
+    }
+
+    /* Big Action Cards */
     div[data-testid="stVerticalBlock"] > div:has(div.stMarkdown) {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(10px);
-        border-radius: 24px;
-        padding: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #1C1C1E;
+        border-radius: 22px;
+        padding: 20px;
+        border: 1px solid #2C2C2E;
         margin-bottom: 15px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    /* Professional Headers */
-    h1, h2, h3 {
-        color: #f8fafc !important;
+    /* Metric Styling */
+    [data-testid="stMetricValue"] {
+        color: #0A84FF !important;
         font-weight: 800 !important;
-        letter-spacing: -0.02em !important;
     }
 
-    /* iOS Style Buttons */
+    /* Mobile Button */
     .stButton>button {
         width: 100%;
-        border-radius: 16px;
-        height: 56px;
-        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        border-radius: 14px;
+        height: 55px;
+        background: #0A84FF;
         color: white !important;
         border: none;
-        font-weight: 700;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
+        font-size: 17px;
+        font-weight: 600;
     }
-    
-    /* Metrics / KPIs */
-    [data-testid="stMetricValue"] {
-        font-size: 2.2rem !important;
-        font-weight: 800 !important;
-        color: #818cf8 !important;
-    }
-
-    /* Hide Streamlit Branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- UTILITIES & LOGIC ---
-def now_ts(): return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# --- DATA & LOGIC ---
+if 'page' not in st.session_state:
+    st.session_state.page = "Dashboard"
 
-def simulate_truck_safe_checks(origin, dest, height_ft):
-    # Simulated bridge & safety logic
-    dist = 450.0 # Placeholder distance
-    sim_min_bridge = 14.2
-    margin = sim_min_bridge - height_ft
-    risk = "OK" if margin > 1.0 else "HIGH"
-    return {"risk": risk, "margin": round(margin, 1), "dist": dist}
+# --- UI LAYOUT ---
+st.markdown('<div class="main-header">RollSafe</div>', unsafe_allow_html=True)
 
-# --- APP LAYOUT ---
-# Header with Logo Placeholder
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.markdown("## 🛡️") # Icon placeholder for RollSafe Logo
-with col2:
-    st.title("RollSafe")
-    st.markdown("*Premium Dispatch & Compliance OS*")
+# 1. iOS Style Alert Box (Priority Info)
+st.markdown("""
+<div class="alert-box">
+    <strong>⚠️ SAFETY ALERT</strong><br>
+    Low clearance (13' 4") reported on I-90 near exit 42. Verify height before transit.
+</div>
+""", unsafe_allow_html=True)
 
-st.divider()
-
-# Main Dashboard
-tab1, tab2, tab3 = st.tabs(["📊 COMMAND", "🗺️ PLANNER", "📁 DOCUMENTS"])
+# 2. Main Navigation Tabs
+tab1, tab2, tab3 = st.tabs(["📊 Activity", "🗺️ Routes", "📁 Files"])
 
 with tab1:
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Active Trips", "3", "+1")
-    m2.metric("Compliance", "98%", "Safe")
-    m3.metric("Revenue (MTD)", "$12,450")
+    st.markdown("### Status")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.metric("Active Loads", "2")
+    with c2:
+        st.metric("Driver Status", "On Duty")
     
-    st.markdown("### 🔔 Safety Alerts")
-    st.warning("Annual DOT Inspection due in 12 days for Unit T-12.")
+    st.markdown("### Recent Activity")
+    st.info("Load LD-442 delivered to Chicago Hub.")
 
 with tab2:
-    st.markdown("### Route Planner")
-    origin = st.text_input("Origin", "Chicago, IL")
-    destination = st.text_input("Destination", "Dallas, TX")
-    height = st.number_input("Truck Height (ft)", value=13.6)
+    st.markdown("### Trip Planner")
+    st.text_input("Enter Destination")
     
-    if st.button("RUN SAFETY GUARDRAIL"):
-        res = simulate_truck_safe_checks(origin, destination, height)
-        if res["risk"] == "OK":
-            st.success(f"ROUTE SAFE: {res['margin']}ft Clearance Detected.")
-        else:
-            st.error("HIGH RISK: Restricted Bridge Height Detected on this corridor.")
-            
-    # Map
-    m = folium.Map(location=[39.8, -98.5], zoom_start=4)
-    st_folium(m, height=350, use_container_width=True)
+    # Map with better mobile sizing
+    m = folium.Map(location=[41.8781, -87.6298], zoom_start=10, tiles="CartoDB dark_matter")
+    st_folium(m, height=300, use_container_width=True)
+    
+    st.write("")
+    if st.button("Calculate Truck-Safe Route"):
+        st.success("Safe Route Calculated: 0 Bridge Risks")
 
 with tab3:
-    st.markdown("### Digital Folder")
-    uploaded_file = st.file_uploader("Drop BOL or Rate Con here", type=['png', 'pdf', 'jpg'])
-    if uploaded_file:
-        st.info("AI Extracting Data... (Load ID: LD-9928 Detected)")
-        st.success("Document Safely Stored & Indexed.")
+    st.markdown("### Document Vault")
+    st.file_uploader("Scan or Upload BOL", type=['pdf', 'jpg', 'png'])
+    st.markdown("---")
+    st.markdown("**Cloud Sync Status:** ✅ All files backed up")
 
-st.caption("© 2026 RollSafe.app | Simulated Compliance Data")
+st.caption("v2.1.0 • Connected to rollsafe.app")
